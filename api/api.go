@@ -2,6 +2,8 @@ package api
 
 import (
   "net/http"
+  "log"
+  "os"
 
   "github.com/gin-gonic/gin"
 
@@ -10,12 +12,20 @@ import (
 )
 
 var datas stub.Stub
+var jwtSecret string
 
-func InitApi(s stub.Stub) {
+func InitApi() {
   router := gin.Default()
 
-  if s != nil {
-    datas = s
+  if use_stub := os.Getenv("STUB_MODE"); use_stub == "true" {
+    datas = &stub.StubImpl{}
+    datas.CreateStubedData()  
+  }
+
+  if secret_token := os.Getenv("SECRET_TOKEN"); secret_token != "" {
+    jwtSecret = secret_token
+  } else {
+    log.Fatalf("You have to specify a `SECRET_TOKEN` env variable somewhere")
   }
 
   router = initializeRoutes(router)  
@@ -24,6 +34,8 @@ func InitApi(s stub.Stub) {
 }
 
 func initializeRoutes(r *gin.Engine) *gin.Engine {
+    r.POST("/login", login)
+
     api := r.Group("/api")
 
     api.GET("/table", getTables)
