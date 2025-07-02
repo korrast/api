@@ -3,12 +3,11 @@ package main
 import (
   "fmt"
 
-  "main/stub"
-  "main/model"
+  "main/api"
 )
 
 func main() {
-  var table model.Table = stub.CreateStubedData()
+  fmt.Println("Starting API")
 
-  fmt.Println("Table name : " + table.Name)
+  api.InitApi()
 }
