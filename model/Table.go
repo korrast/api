@@ -1,6 +1,8 @@
 package model
 
 import (
+  "errors"
+
   uuid "github.com/google/uuid"
 )
 
@@ -23,4 +25,13 @@ func (t *Table) AddColumn(name string) {
   // Change the color
   col.Init(name, "0xFFFFFF")
   t.Columns = append(t.Columns, col)
+}
+
+func (t* Table) AddTask(title string, description string, columnIndex int) (error){
+  if columnIndex >= len(t.Columns) {
+    return errors.New("index out of bounds")
+  }
+
+  t.Columns[columnIndex].AddTask(title, description)
+  return nil
 }

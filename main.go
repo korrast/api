@@ -3,12 +3,12 @@ package main
 import (
   "fmt"
 
+  "main/stub"
   "main/model"
 )
 
 func main() {
-  var table model.Table
-  table.Init("Table 1")
+  var table model.Table = stub.CreateStubedData()
 
-  fmt.Println("Id :" + table.Id.String() + ", Name :" + table.Name)
+  fmt.Println("Table name : " + table.Name)
 }
