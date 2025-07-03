@@ -1,11 +1,11 @@
 package api
 
 import (
+  "fmt"
   "time"
   "net/http"
   "errors"
   "strings"
-  "context"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
@@ -24,7 +24,7 @@ func login(c *gin.Context) {
   token, err := generateJWT(data.Id)
 
   if err != nil {
-    c.JSON(500, "Error while generating JWT token : " + err.Error())
+    c.AbortWithStatusJSON(500, "Error while generating JWT token : " + err.Error())
   }
 
   c.JSON(http.StatusOK, token)
@@ -47,21 +47,20 @@ func generateJWT(userID uuid.UUID) (string, error) {
 	return signedToken, nil
 }
 
-func authMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		userID, err := extractUserIDFromJWT(r)
+func authMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userID, err := extractUserIDFromJWT(c)
 		if err != nil {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			return
+      c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"Error": err.Error()})
 		}
 
-		ctx := context.WithValue(r.Context(), "userID", userID)
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
+    c.Set("UserId", userID)
+    c.Next()
+	}
 }
 
-func extractUserIDFromJWT(r *http.Request) (uuid.UUID, error) {
-	authHeader := r.Header.Get("Authorization")
+func extractUserIDFromJWT(c *gin.Context) (uuid.UUID, error) {
+	authHeader := c.GetHeader("Authorization")
 	if authHeader == "" {
 		return uuid.Nil, errors.New("missing auth header")
 	}
@@ -73,12 +72,14 @@ func extractUserIDFromJWT(r *http.Request) (uuid.UUID, error) {
 
 	tokenStr := parts[1]
 
+  fmt.Println(tokenStr)
 	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("unexpected signing method")
 		}
-		return jwtSecret, nil
+		return []byte(jwtSecret), nil
 	})
+
 	if err != nil || !token.Valid {
 		return uuid.Nil, errors.New("invalid token")
 	}
@@ -101,3 +102,12 @@ func extractUserIDFromJWT(r *http.Request) (uuid.UUID, error) {
 	return userID, nil
 }
 
+func getUserIdFromContext(c *gin.Context) (any, error) {
+  userId, exist := c.Get("UserId")
+
+  if !exist {
+    return nil, errors.New("user id not found in context")
+  }
+
+  return userId, nil
+}
