@@ -6,12 +6,12 @@ import (
 
 type User struct {
 	Id       uuid.UUID
-	Pseudo   string
+	Username string
 	Password string
 }
 
-func (u *User) Init(pseudo string, password string) {
+func (u *User) Init(username string, password string) {
 	u.Id = uuid.New()
-	u.Pseudo = pseudo
+	u.Username = username
 	u.Password = password
 }

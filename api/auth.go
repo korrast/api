@@ -1,8 +1,10 @@
 package api
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 	"time"
@@ -16,9 +18,48 @@ import (
 
 func login(c *gin.Context) {
 	var data model.User
+	jsonData, err := io.ReadAll(c.Request.Body)
+
+	if err != nil {
+		msg := gin.H{
+			"error": "Could not read request body " + err.Error(),
+		}
+		c.AbortWithStatusJSON(http.StatusBadRequest, msg)
+		return
+	}
+
+	var d map[string]string
+	if err := json.Unmarshal(jsonData, &d); err != nil {
+		msg := gin.H{
+			"error": "invalid JSON format " + err.Error(),
+		}
+		c.AbortWithStatusJSON(http.StatusBadRequest, msg)
+		return
+	}
+
+	var user, password string = d["username"], d["password"]
+
+	if user == "" || password == "" {
+		msg := gin.H{
+			"error": "invalid body fields, need username and password",
+		}
+		c.AbortWithStatusJSON(http.StatusBadRequest, msg)
+		return
+	}
 
 	if datas != nil {
-		data = datas.GetUser()
+		var u = datas.GetUser()
+		if u.Username == user && u.Password == password {
+			data = u
+		}
+	}
+
+	if (data == model.User{}) {
+		msg := gin.H{
+			"error": "user not found, wrong credentials",
+		}
+		c.AbortWithStatusJSON(http.StatusUnauthorized, msg)
+		return
 	}
 
 	token, err := generateJWT(data.Id)
