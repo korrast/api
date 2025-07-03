@@ -1,13 +1,13 @@
-package main 
+package main
 
 import (
-  "fmt"
+	"fmt"
 
-  "main/api"
+	"main/api"
 )
 
 func main() {
-  fmt.Println("Starting API")
+	fmt.Println("Starting API")
 
-  api.InitApi()
+	api.InitApi()
 }

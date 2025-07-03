@@ -1,73 +1,73 @@
 package api
 
 import (
-  "net/http"
-  "log"
-  "os"
-  "fmt"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
 
-  "github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 
-  "main/stub"
-  "main/model"
+	"main/model"
+	"main/stub"
 )
 
 var datas stub.Stub
 var jwtSecret string
 
 func InitApi() {
-  router := gin.Default()
+	router := gin.Default()
 
-  if use_stub := os.Getenv("STUB_MODE"); use_stub == "true" {
-    datas = &stub.StubImpl{}
-    datas.CreateStubedData()  
-  }
+	if use_stub := os.Getenv("STUB_MODE"); use_stub == "true" {
+		datas = &stub.StubImpl{}
+		datas.CreateStubedData()
+	}
 
-  if secret_token := os.Getenv("SECRET_TOKEN"); secret_token != "" {
-    jwtSecret = secret_token
-  } else {
-    log.Fatalf("You have to specify a `SECRET_TOKEN` env variable somewhere")
-  }
+	if secret_token := os.Getenv("SECRET_TOKEN"); secret_token != "" {
+		jwtSecret = secret_token
+	} else {
+		log.Fatalf("You have to specify a `SECRET_TOKEN` env variable somewhere")
+	}
 
-  router = initializeRoutes(router)  
+	router = initializeRoutes(router)
 
-  router.Run()
+	router.Run()
 }
 
 func initializeRoutes(r *gin.Engine) *gin.Engine {
-    r.POST("/login", login)
+	r.POST("/login", login)
 
-    api := r.Group("/api")
+	api := r.Group("/api")
 
-    api.Use(authMiddleware())
+	api.Use(authMiddleware())
 
-    api.GET("/table", getTables)
-    api.GET("/table/:id", getTable)
-    api.GET("/table/:id/column", getColumns)
+	api.GET("/table", getTables)
+	api.GET("/table/:id", getTable)
+	api.GET("/table/:id/column", getColumns)
 
-    return r
+	return r
 }
 
 func getTables(c *gin.Context) {
-  var data model.Table
-  userId, err := getUserIdFromContext(c)
+	var data model.Table
+	userId, err := getUserIdFromContext(c)
 
-  fmt.Println(userId)
-  if err != nil {
-    c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
-  } 
-  
-  if datas != nil {
-    data = datas.GetTable()
-  }
+	fmt.Println(userId)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+	}
 
-  c.JSON(http.StatusOK, data)
+	if datas != nil {
+		data = datas.GetTable()
+	}
+
+	c.JSON(http.StatusOK, data)
 }
 
 func getTable(c *gin.Context) {
-  c.JSON(http.StatusOK, "ok")
+	c.JSON(http.StatusOK, "ok")
 }
 
 func getColumns(c *gin.Context) {
-  c.JSON(http.StatusOK, "ok")
+	c.JSON(http.StatusOK, "ok")
 }

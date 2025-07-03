@@ -1,45 +1,45 @@
 package api
 
 import (
-  "fmt"
-  "time"
-  "net/http"
-  "errors"
-  "strings"
+	"errors"
+	"fmt"
+	"net/http"
+	"strings"
+	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
-  "github.com/gin-gonic/gin"
 
-  "main/model"
+	"main/model"
 )
 
 func login(c *gin.Context) {
-  var data model.User
+	var data model.User
 
-  if datas != nil {
-    data = datas.GetUser()
-  }
+	if datas != nil {
+		data = datas.GetUser()
+	}
 
-  token, err := generateJWT(data.Id)
+	token, err := generateJWT(data.Id)
 
-  if err != nil {
-    c.AbortWithStatusJSON(500, "Error while generating JWT token : " + err.Error())
-  }
+	if err != nil {
+		c.AbortWithStatusJSON(500, "Error while generating JWT token : "+err.Error())
+	}
 
-  c.JSON(http.StatusOK, token)
+	c.JSON(http.StatusOK, token)
 }
 
 func generateJWT(userID uuid.UUID) (string, error) {
 	claims := jwt.MapClaims{
-		"sub": userID.String(),         
+		"sub": userID.String(),
 		"exp": time.Now().Add(15 * time.Minute).Unix(),
 		"iat": time.Now().Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-  signedToken, err := token.SignedString([]byte(jwtSecret))
+	signedToken, err := token.SignedString([]byte(jwtSecret))
 	if err != nil {
 		return "", err
 	}
@@ -51,11 +51,11 @@ func authMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID, err := extractUserIDFromJWT(c)
 		if err != nil {
-      c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"Error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"Error": err.Error()})
 		}
 
-    c.Set("UserId", userID)
-    c.Next()
+		c.Set("UserId", userID)
+		c.Next()
 	}
 }
 
@@ -72,7 +72,7 @@ func extractUserIDFromJWT(c *gin.Context) (uuid.UUID, error) {
 
 	tokenStr := parts[1]
 
-  fmt.Println(tokenStr)
+	fmt.Println(tokenStr)
 	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("unexpected signing method")
@@ -103,11 +103,11 @@ func extractUserIDFromJWT(c *gin.Context) (uuid.UUID, error) {
 }
 
 func getUserIdFromContext(c *gin.Context) (any, error) {
-  userId, exist := c.Get("UserId")
+	userId, exist := c.Get("UserId")
 
-  if !exist {
-    return nil, errors.New("user id not found in context")
-  }
+	if !exist {
+		return nil, errors.New("user id not found in context")
+	}
 
-  return userId, nil
+	return userId, nil
 }
