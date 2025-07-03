@@ -16,6 +16,44 @@ import (
 	"main/model"
 )
 
+func register(c *gin.Context) {
+	var newUser model.User
+	jsonData, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		msg := gin.H{
+			"error": "Could not read request body " + err.Error(),
+		}
+		c.AbortWithStatusJSON(http.StatusBadRequest, msg)
+		return
+	}
+
+	var d map[string]string
+	if err := json.Unmarshal(jsonData, &d); err != nil {
+		msg := gin.H{
+			"error": "invalid JSON format " + err.Error(),
+		}
+		c.AbortWithStatusJSON(http.StatusBadRequest, msg)
+		return
+	}
+
+	var user, password string = d["username"], d["password"]
+
+	if user == "" || password == "" {
+		msg := gin.H{
+			"error": "invalid body fields, need username and password",
+		}
+		c.AbortWithStatusJSON(http.StatusBadRequest, msg)
+		return
+	}
+
+	newUser.Init(user, password)
+	if datas != nil {
+		fmt.Println("NEW USER -> UUID : " + newUser.Id.String() + " USERNAME : " + newUser.Username + " PASSWORD : " + newUser.Password)
+	}
+
+	c.JSON(http.StatusOK, "New user created")
+}
+
 func login(c *gin.Context) {
 	var data model.User
 	jsonData, err := io.ReadAll(c.Request.Body)

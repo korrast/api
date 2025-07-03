@@ -36,6 +36,7 @@ func InitApi() {
 
 func initializeRoutes(r *gin.Engine) *gin.Engine {
 	r.POST("/login", login)
+	r.POST("/register", register)
 
 	api := r.Group("/api")
 
