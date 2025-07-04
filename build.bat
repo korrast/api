@@ -1,4 +1,3 @@
-#!/bin/bash
-
+@echo off
 gofmt -w .
 go run .
