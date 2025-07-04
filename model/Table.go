@@ -7,14 +7,16 @@ import (
 )
 
 type Table struct {
-	Id      uuid.UUID
-	Name    string
-	Columns []Column
+	Id         uuid.UUID
+	Title      string
+	Columns    []Column
+	Labels     []Label
+	Milestones []Milestone
 }
 
-func (t *Table) Init(name string) {
+func (t *Table) Init(title string) {
 	t.Id = uuid.New()
-	t.Name = name
+	t.Title = title
 	var base [3]Column = BaseColumnsTemplate()
 	t.Columns = append(t.Columns, base[0], base[1], base[2])
 }
@@ -34,4 +36,12 @@ func (t *Table) AddTask(title string, description string, columnIndex int) error
 
 	t.Columns[columnIndex].AddTask(title, description)
 	return nil
+}
+
+func (t *Table) AddLabel(label Label) {
+	t.Labels = append(t.Labels, label)
+}
+
+func (t *Table) AddMilestone(milestone Milestone) {
+	t.Milestones = append(t.Milestones, milestone)
 }

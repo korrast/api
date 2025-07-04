@@ -89,16 +89,26 @@ func login(c *gin.Context) {
 		var u = datas.GetUser()
 		if u.Username == user && u.Password == password {
 			data = u
+		} else {
+			msg := gin.H{
+				"error": "user not found in stub, wrong credentials",
+			}
+			c.AbortWithStatusJSON(http.StatusUnauthorized, msg)
+			return
 		}
 	}
 
-	if (data == model.User{}) {
-		msg := gin.H{
-			"error": "user not found, wrong credentials",
+	// TODO
+	// enhance error after connecting with db
+	/*
+		if (data == model.User{}) {
+			msg := gin.H{
+				"error": "user not found, wrong credentials",
+			}
+			c.AbortWithStatusJSON(http.StatusUnauthorized, msg)
+			return
 		}
-		c.AbortWithStatusJSON(http.StatusUnauthorized, msg)
-		return
-	}
+	*/
 
 	token, err := generateJWT(data.Id)
 
