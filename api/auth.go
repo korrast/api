@@ -78,7 +78,7 @@ func register(c *gin.Context) {
 }
 
 func login(c *gin.Context) {
-	var data model.User
+	var data []model.User
 	jsonData, err := io.ReadAll(c.Request.Body)
 
 	if err != nil {
@@ -108,20 +108,37 @@ func login(c *gin.Context) {
 		return
 	}
 
-	if datas != nil {
-		var u = datas.GetUser()
-		if u.Username == user && u.Password == password {
-			data = u
-		} else {
-			msg := gin.H{
-				"error": "user not found in stub, wrong credentials",
-			}
-			c.AbortWithStatusJSON(http.StatusUnauthorized, msg)
-			return
+	conn, err := database.StartConn()
+	if err != nil {
+		msg := gin.H{
+			"error": "can't start db : " + err.Error(),
 		}
+		c.AbortWithStatusJSON(http.StatusInternalServerError, msg)
+		return
+	}
+	defer database.CloseConn(conn)
+
+	data, err = database.GetUser(conn, user, password)
+
+	if err != nil {
+		msg := gin.H{
+			"error": "can't select user from db : " + err.Error(),
+		}
+		c.AbortWithStatusJSON(http.StatusInternalServerError, msg)
+		return
 	}
 
-	token, err := generateJWT(data.Id)
+	if len(data) == 0 {
+		msg := gin.H{
+			"error": "user not found",
+		}
+		c.AbortWithStatusJSON(http.StatusUnauthorized, msg)
+		return
+	}
+
+	fmt.Println(data[0])
+
+	token, err := generateJWT(data[0].Id)
 
 	if err != nil {
 		c.AbortWithStatusJSON(500, "Error while generating JWT token : "+err.Error())
