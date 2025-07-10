@@ -1,34 +1,35 @@
 package database
 
 import (
-	"database/sql"
 	"fmt"
 	"os"
 
-	_ "github.com/lib/pq"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-func StartConn() (*DB, err) {
+func StartConn() (*gorm.DB, error) {
 	var host, port, user, password, dbname = os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_NAME")
 
-	psqlConn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
-	db, err := sql.Open("postgres", psqlConn)
+	fmt.Println("DSN :", dsn)
+	conn, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		fmt.Println("Can't open database")
 		return nil, err
 	}
 
-	err = db.Ping()
-
-	if err != nil {
-		fmt.Println("Can't ping database")
-		return nil, err
-	}
-
-	return db, nil
+	return conn, nil
 }
 
-func CloseCon(db *DB) {
+func CloseConn(conn *gorm.DB) error {
+	db, err := conn.DB()
+	if err != nil {
+		fmt.Println("Couldn't get DB from conn")
+		return err
+	}
+
 	db.Close()
+	return nil
 }

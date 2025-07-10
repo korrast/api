@@ -13,6 +13,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 
+	"main/database"
 	"main/model"
 )
 
@@ -49,9 +50,31 @@ func register(c *gin.Context) {
 	newUser.Init(user, password)
 	if datas != nil {
 		fmt.Println("NEW USER -> UUID : " + newUser.Id.String() + " USERNAME : " + newUser.Username + " PASSWORD : " + newUser.Password)
+		return
 	}
 
-	c.JSON(http.StatusOK, "New user created")
+	conn, err := database.StartConn()
+	if err != nil {
+		msg := gin.H{
+			"error": "can't start db : " + err.Error(),
+		}
+		c.AbortWithStatusJSON(http.StatusInternalServerError, msg)
+		return
+	}
+
+	defer database.CloseConn(conn)
+
+	err = database.AddUser(conn, newUser)
+
+	if err != nil {
+		msg := gin.H{
+			"error": "can't add user in db : " + err.Error(),
+		}
+		c.AbortWithStatusJSON(http.StatusInternalServerError, msg)
+		return
+	}
+
+	c.JSON(http.StatusCreated, "New user created")
 }
 
 func login(c *gin.Context) {
@@ -97,18 +120,6 @@ func login(c *gin.Context) {
 			return
 		}
 	}
-
-	// TODO
-	// enhance error after connecting with db
-	/*
-		if (data == model.User{}) {
-			msg := gin.H{
-				"error": "user not found, wrong credentials",
-			}
-			c.AbortWithStatusJSON(http.StatusUnauthorized, msg)
-			return
-		}
-	*/
 
 	token, err := generateJWT(data.Id)
 

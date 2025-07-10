@@ -8,7 +8,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"main/database"
 	"main/model"
 	"main/stub"
 )

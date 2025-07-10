@@ -5,11 +5,11 @@ import (
 )
 
 type User struct {
-	Id       uuid.UUID
-	Username string
-	Password string
+	Id       uuid.UUID `json:"id" gorm:" primaryKey; not null"`
+	Username string    `json:"username" gorm:"not null"`
+	Password string    `gorm:"not null"`
 
-	Tables []Table
+	Tables []Table `json:"tables" gorm:"-"`
 }
 
 func (u *User) Init(username string, password string) {
