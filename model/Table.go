@@ -7,11 +7,11 @@ import (
 )
 
 type Table struct {
-	Id         uuid.UUID
-	Title      string
-	Columns    []Column
-	Labels     []Label
-	Milestones []Milestone
+	Id         uuid.UUID   `json:"id" gorm:"primaryKey; not null"`
+	Title      string      `json:"title" gorm:"not null"`
+	Columns    []Column    `gorm:"-"`
+	Labels     []Label     `gorm:"-"`
+	Milestones []Milestone `gorm:"-"`
 }
 
 func (t *Table) Init(title string) {

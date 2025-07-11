@@ -1,14 +1,11 @@
 package api
 
 import (
-	"fmt"
 	"log"
-	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
 
-	"main/model"
 	"main/stub"
 )
 
@@ -42,33 +39,7 @@ func initializeRoutes(r *gin.Engine) *gin.Engine {
 
 	api.Use(authMiddleware())
 
-	api.GET("/table", getTables)
-	api.GET("/table/:id", getTable)
-	api.GET("/table/:id/column", getColumns)
+	api.POST("/tables", createTable)
 
 	return r
-}
-
-func getTables(c *gin.Context) {
-	var data model.Table
-	userId, err := getUserIdFromContext(c)
-
-	fmt.Println(userId)
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
-	}
-
-	if datas != nil {
-		data = datas.GetTable()
-	}
-
-	c.JSON(http.StatusOK, data)
-}
-
-func getTable(c *gin.Context) {
-	c.JSON(http.StatusOK, "ok")
-}
-
-func getColumns(c *gin.Context) {
-	c.JSON(http.StatusOK, "ok")
 }

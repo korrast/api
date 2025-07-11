@@ -64,7 +64,7 @@ func register(c *gin.Context) {
 
 	defer database.CloseConn(conn)
 
-	err = database.AddUser(conn, newUser)
+	err = database.InsertUser(conn, newUser)
 
 	if err != nil {
 		msg := gin.H{

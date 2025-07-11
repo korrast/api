@@ -6,12 +6,8 @@ import (
 	"gorm.io/gorm"
 )
 
-func AddUser(db *gorm.DB, user model.User) error {
-	if err := db.Create(&user); err.Error != nil {
-		return err.Error
-	}
-
-	return nil
+func InsertUser(db *gorm.DB, user model.User) error {
+	return db.Create(&user).Error
 }
 
 func GetUser(db *gorm.DB, username string, password string) ([]model.User, error) {
