@@ -1,0 +1,43 @@
+services:
+  korrast-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: korrast-api
+    restart: always
+    environment:
+      DB_HOST: postgres-db
+      DB_PORT: 5432
+      DB_USER: korrast-dev
+      DB_PASSWORD: 123456
+      DB_NAME: korrast_db
+      SECRET_TOKEN: korrast-secret-jwt-key
+    ports:
+      - "8080:8080"
+    networks:
+      - korrast-network
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16
+    container_name: postgres-db
+    restart: always
+    environment:
+      POSTGRES_USER: korrast-dev
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: korrast_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ../database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - korrast-network
+
+volumes:
+  pgdata:
+
+networks:
+  korrast-network:
+    driver: bridge

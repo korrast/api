@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"main/api"
 
@@ -16,5 +17,13 @@ func main() {
 
 	fmt.Println("Starting API")
 
-	api.InitApi()
+	server, err := api.NewServer()
+	if err != nil {
+		log.Fatal("Failed to create server:", err)
+	}
+	defer server.Close()
+
+	if err := server.Run(); err != nil {
+		log.Fatal("Failed to start server:", err)
+	}
 }
