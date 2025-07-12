@@ -106,6 +106,7 @@ api/
 
 ### Tables (Protected)
 - `POST /api/tables` - Create a new table
+- `GET /api/tables` - Get all user tables
 
 ### Models Structure
 
