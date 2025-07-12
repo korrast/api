@@ -7,8 +7,8 @@ import (
 )
 
 type Table struct {
-	Id         uuid.UUID   `json:"id" gorm:"primaryKey; not null"`
-	Title      string      `json:"title" gorm:"not null"`
+	Id         uuid.UUID   `gorm:"primaryKey; not null"`
+	Title      string      `gorm:"not null"`
 	Columns    []Column    `gorm:"-"`
 	Labels     []Label     `gorm:"-"`
 	Milestones []Milestone `gorm:"-"`

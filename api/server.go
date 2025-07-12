@@ -13,10 +13,10 @@ import (
 )
 
 type Server struct {
-	router      *gin.Engine
-	dbManager   *database.Manager
-	jwtSecret   string
-	authHandler *handler.AuthHandler
+	router       *gin.Engine
+	dbManager    *database.Manager
+	jwtSecret    string
+	authHandler  *handler.AuthHandler
 	tableHandler *handler.TableHandler
 }
 
@@ -57,6 +57,7 @@ func (s *Server) setupRoutes() {
 	api.Use(middleware.AuthMiddleware(s.jwtSecret))
 	{
 		api.POST("/tables", s.tableHandler.CreateTable)
+		api.GET("/tables", s.tableHandler.GetTables)
 	}
 }
 

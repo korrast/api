@@ -40,3 +40,19 @@ func (h *TableHandler) CreateTable(c *gin.Context) {
 
 	response.CreatedResponse(c, "Table created successfully", table)
 }
+
+func (h *TableHandler) GetTables(c *gin.Context) {
+	userID, err := middleware.GetUserIDFromContext(c)
+	if err != nil {
+		response.BadRequestError(c, err.Error())
+		return
+	}
+
+	tables, err := h.tableService.GetTables(userID)
+	if err != nil {
+		response.InternalServerError(c, err.Error())
+		return
+	}
+
+	response.SuccessResponse(c, 200, "Tables fetched", tables)
+}

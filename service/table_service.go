@@ -50,3 +50,12 @@ func (s *TableService) CreateTable(userID uuid.UUID, req *dto.CreateTableRequest
 
 	return &newTable, nil
 }
+
+func (s *TableService) GetTables(userID uuid.UUID) (*[]model.Table, error) {
+	tables, err := database.SelectTables(s.db, userID.String())
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch tables: %w", err)
+	}
+
+	return &tables, nil
+}

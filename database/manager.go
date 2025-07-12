@@ -41,7 +41,7 @@ func initializeConnection() (*gorm.DB, error) {
 	password := getEnvOrDefault("DB_PASSWORD", "123456")
 	dbname := getEnvOrDefault("DB_NAME", "korrast_db")
 
-	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", 
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
 
 	config := &gorm.Config{
