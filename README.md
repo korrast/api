@@ -256,6 +256,14 @@ curl -X POST http://localhost:8080/api/tables \
   -d '{"title": "My Project"}'
 ```
 
+### Create a column
+```bash
+curl -X POST http://localhost:8080/api/columns \
+  -H "Content-Type: application/json" \
+  -H "Athorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{"table_id": "table_id", "title": "New columns", `optinnal`: "color": "#FAE536"}' 
+```
+
 ## 📄 License
 
 MIT License - see LICENSE file for details.

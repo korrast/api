@@ -20,10 +20,6 @@ func NewTableService(db *gorm.DB) *TableService {
 }
 
 func (s *TableService) CreateTable(userID uuid.UUID, req *dto.CreateTableRequest) (*model.Table, error) {
-	if err := req.Validate(); err != nil {
-		return nil, err
-	}
-
 	var newTable model.Table
 	newTable.Init(req.Title)
 

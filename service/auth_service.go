@@ -25,10 +25,6 @@ func NewAuthService(db *gorm.DB, jwtSecret string) *AuthService {
 }
 
 func (s *AuthService) Register(req *dto.AuthRequest) error {
-	if err := req.Validate(); err != nil {
-		return err
-	}
-
 	var newUser model.User
 	newUser.Init(req.Username, req.Password)
 
@@ -40,10 +36,6 @@ func (s *AuthService) Register(req *dto.AuthRequest) error {
 }
 
 func (s *AuthService) Login(req *dto.AuthRequest) (*dto.AuthResponse, error) {
-	if err := req.Validate(); err != nil {
-		return nil, err
-	}
-
 	users, err := database.GetUser(s.db, req.Username, req.Password)
 	if err != nil {
 		return nil, fmt.Errorf("authentication failed: %w", err)

@@ -13,11 +13,12 @@ import (
 )
 
 type Server struct {
-	router       *gin.Engine
-	dbManager    *database.Manager
-	jwtSecret    string
-	authHandler  *handler.AuthHandler
-	tableHandler *handler.TableHandler
+	router        *gin.Engine
+	dbManager     *database.Manager
+	jwtSecret     string
+	authHandler   *handler.AuthHandler
+	tableHandler  *handler.TableHandler
+	columnHandler *handler.ColumnHandler
 }
 
 func NewServer() (*Server, error) {
@@ -33,16 +34,19 @@ func NewServer() (*Server, error) {
 
 	authService := service.NewAuthService(dbManager.GetDB(), jwtSecret)
 	tableService := service.NewTableService(dbManager.GetDB())
+	columnService := service.NewColumnService(dbManager.GetDB())
 
 	authHandler := handler.NewAuthHandler(authService)
 	tableHandler := handler.NewTableHandler(tableService)
+	columnHandler := handler.NewColumnHandler(columnService)
 
 	server := &Server{
-		router:       gin.Default(),
-		dbManager:    dbManager,
-		jwtSecret:    jwtSecret,
-		authHandler:  authHandler,
-		tableHandler: tableHandler,
+		router:        gin.Default(),
+		dbManager:     dbManager,
+		jwtSecret:     jwtSecret,
+		authHandler:   authHandler,
+		tableHandler:  tableHandler,
+		columnHandler: columnHandler,
 	}
 
 	server.setupRoutes()
@@ -58,6 +62,7 @@ func (s *Server) setupRoutes() {
 	{
 		api.POST("/tables", s.tableHandler.CreateTable)
 		api.GET("/tables", s.tableHandler.GetTables)
+		api.POST("/columns", s.columnHandler.CreateColumn)
 	}
 }
 

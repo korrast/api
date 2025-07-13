@@ -10,3 +10,10 @@ func InsertLinkUserTable(db *gorm.DB, userId string, tableId string) error {
 		"tableid": tableId,
 	}).Error
 }
+
+func InsertLinkTableColumn(db *gorm.DB, tableId string, columnId string) error {
+	return db.Table("tables_columns").Create(map[string]interface{}{
+		"tableid":  tableId,
+		"columnid": columnId,
+	}).Error
+}
