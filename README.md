@@ -108,6 +108,10 @@ api/
 - `POST /api/tables` - Create a new table
 - `GET /api/tables` - Get all user tables
 
+### Columns (Protected)
+
+- `POST /api/tables/:tableID/columns` - Create a new Column in a table
+
 ### Models Structure
 
 ```mermaid
@@ -258,7 +262,7 @@ curl -X POST http://localhost:8080/api/tables \
 
 ### Create a column
 ```bash
-curl -X POST http://localhost:8080/api/columns \
+curl -X POST http://localhost:8080/api/table/:tableID/columns \
   -H "Content-Type: application/json" \
   -H "Athorization: Bearer YOUR_JWT_TOKEN" \
   -d '{"table_id": "table_id", "title": "New columns", `optinnal`: "color": "#FAE536"}' 
