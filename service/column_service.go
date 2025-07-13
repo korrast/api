@@ -18,7 +18,7 @@ func NewColumnService(db *gorm.DB) *ColumnService {
 	return &ColumnService{db: db}
 }
 
-func (s *ColumnService) CreateColumn(req *dto.CreateColumnRequest) (*model.Column, error) {
+func (s *ColumnService) CreateColumn(tableId string, req *dto.CreateColumnRequest) (*model.Column, error) {
 	var newColumn model.Column
 	newColumn.Init(req.Title, req.Color)
 
@@ -34,7 +34,7 @@ func (s *ColumnService) CreateColumn(req *dto.CreateColumnRequest) (*model.Colum
 		return nil, fmt.Errorf("failed to create column: %w", err)
 	}
 
-	if err := database.InsertLinkTableColumn(tx, req.TableID, newColumn.Id.String()); err != nil {
+	if err := database.InsertLinkTableColumn(tx, tableId, newColumn.Id.String()); err != nil {
 		tx.Rollback()
 		return nil, fmt.Errorf("failed to link column to table: %w", err)
 	}

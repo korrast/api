@@ -10,9 +10,8 @@ type CreateTableRequest struct {
 }
 
 type CreateColumnRequest struct {
-	TableID string `json:"table_id" binding:"required"`
-	Title   string `json:"title" binding:"required"`
-	Color   string `json:"color"`
+	Title string `json:"title" binding:"required"`
+	Color string `json:"color"`
 }
 
 type AuthResponse struct {

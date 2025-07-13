@@ -62,7 +62,7 @@ func (s *Server) setupRoutes() {
 	{
 		api.POST("/tables", s.tableHandler.CreateTable)
 		api.GET("/tables", s.tableHandler.GetTables)
-		api.POST("/columns", s.columnHandler.CreateColumn)
+		api.POST("/tables/:id/columns", s.columnHandler.CreateColumn)
 	}
 }
 

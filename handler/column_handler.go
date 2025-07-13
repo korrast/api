@@ -25,7 +25,8 @@ func (h *ColumnHandler) CreateColumn(c *gin.Context) {
 		return
 	}
 
-	column, err := h.columnService.CreateColumn(&req)
+	tableId := c.Param("id")
+	column, err := h.columnService.CreateColumn(tableId, &req)
 	if err != nil {
 		response.InternalServerError(c, err.Error())
 		return
