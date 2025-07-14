@@ -14,6 +14,11 @@ type CreateColumnRequest struct {
 	Color string `json:"color"`
 }
 
+type GetTablesResponse struct {
+	Id    string `json: "id"`
+	Title string `json: "title"`
+}
+
 type AuthResponse struct {
 	Token string `json:"token"`
 }

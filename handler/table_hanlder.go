@@ -56,3 +56,15 @@ func (h *TableHandler) GetTables(c *gin.Context) {
 
 	response.SuccessResponse(c, 200, "Tables fetched", tables)
 }
+
+func (h *TableHandler) GetTable(c *gin.Context) {
+	tableID := c.Param("id")
+
+	table, err := h.tableService.GetTable(tableID)
+	if err != nil {
+		response.InternalServerError(c, err.Error())
+		return
+	}
+
+	response.SuccessResponse(c, 200, "Table fetched", table)
+}

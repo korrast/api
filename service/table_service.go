@@ -47,11 +47,30 @@ func (s *TableService) CreateTable(userID uuid.UUID, req *dto.CreateTableRequest
 	return &newTable, nil
 }
 
-func (s *TableService) GetTables(userID uuid.UUID) (*[]model.Table, error) {
+func (s *TableService) GetTables(userID uuid.UUID) (*[]dto.GetTablesResponse, error) {
+	var res []dto.GetTablesResponse
 	tables, err := database.SelectTables(s.db, userID.String())
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch tables: %w", err)
 	}
 
-	return &tables, nil
+	for _, table := range tables {
+		tableRes := dto.GetTablesResponse{
+			Id:    table.Id.String(),
+			Title: table.Title,
+		}
+
+		res = append(res, tableRes)
+	}
+
+	return &res, nil
+}
+
+func (s *TableService) GetTable(tableID string) (*model.Table, error) {
+	table, err := database.SelectTable(s.db, tableID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch table : %w", err)
+	}
+
+	return table, nil
 }
