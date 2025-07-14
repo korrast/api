@@ -27,16 +27,21 @@ func SelectTables(db *gorm.DB, userID string) ([]model.Table, error) {
 	return tables, nil
 }
 
-func SelectTable(db *gorm.DB, tableID string) (*model.Table, error) {
+func SelectTable(db *gorm.DB, userID string, tableID string) (*model.Table, error) {
 	var tables []model.Table
+	var tableIdInDb []string
 	var columns, labels, milestones []string
 
-	if err := db.Where("id = ?", tableID).Find(&tables).Error; err != nil {
+	if err := db.Table("users_tables").Where("userid = ?", userID).Where("tableid = ?", tableID).Select("tableid").Find(&tableIdInDb).Error; err != nil {
 		return nil, err
 	}
 
-	if len(tables) == 0 {
+	if len(tableIdInDb) == 0 {
 		return nil, errors.New("no table with id" + tableID + "in db")
+	}
+
+	if err := db.Where("id = ?", tableIdInDb[0]).Find(&tables).Error; err != nil {
+		return nil, err
 	}
 
 	if err := db.Table("tables_columns").Where("tableid = ?", tableID).Find(&columns).Error; err != nil {
@@ -50,10 +55,6 @@ func SelectTable(db *gorm.DB, tableID string) (*model.Table, error) {
 	if err := db.Table("tables_milestones").Where("tableid = ?", tableID).Find(&milestones).Error; err != nil {
 		return nil, err
 	}
-
-	//tables[0].Labels = labels
-	//tables[0].Milestones = milestones
-	//tables[0].Columns = columns
 
 	return &tables[0], nil
 }

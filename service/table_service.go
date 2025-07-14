@@ -66,8 +66,8 @@ func (s *TableService) GetTables(userID uuid.UUID) (*[]dto.GetTablesResponse, er
 	return &res, nil
 }
 
-func (s *TableService) GetTable(tableID string) (*model.Table, error) {
-	table, err := database.SelectTable(s.db, tableID)
+func (s *TableService) GetTable(userID string, tableID string) (*model.Table, error) {
+	table, err := database.SelectTable(s.db, userID, tableID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch table : %w", err)
 	}

@@ -58,9 +58,10 @@ func (h *TableHandler) GetTables(c *gin.Context) {
 }
 
 func (h *TableHandler) GetTable(c *gin.Context) {
+	userID, err := middleware.GetUserIDFromContext(c)
 	tableID := c.Param("id")
 
-	table, err := h.tableService.GetTable(tableID)
+	table, err := h.tableService.GetTable(userID.String(), tableID)
 	if err != nil {
 		response.InternalServerError(c, err.Error())
 		return
