@@ -19,6 +19,14 @@ type GetTablesResponse struct {
 	Title string `json: "title"`
 }
 
+type GetTableResponse struct {
+  Id string `json: "id"`
+  Title string `json: "title"`
+  ColumnIds []string `json: "column_ids"`
+  LabelIds []string `json: "label_ids"`
+  MilestoneIds []string `json: "milestone_ids"`
+}
+
 type AuthResponse struct {
 	Token string `json:"token"`
 }

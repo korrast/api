@@ -30,7 +30,6 @@ func SelectTables(db *gorm.DB, userID string) ([]model.Table, error) {
 func SelectTable(db *gorm.DB, userID string, tableID string) (*model.Table, error) {
 	var tables []model.Table
 	var tableIdInDb []string
-	var columns, labels, milestones []string
 
 	if err := db.Table("users_tables").Where("userid = ?", userID).Where("tableid = ?", tableID).Select("tableid").Find(&tableIdInDb).Error; err != nil {
 		return nil, err
@@ -41,18 +40,6 @@ func SelectTable(db *gorm.DB, userID string, tableID string) (*model.Table, erro
 	}
 
 	if err := db.Where("id = ?", tableIdInDb[0]).Find(&tables).Error; err != nil {
-		return nil, err
-	}
-
-	if err := db.Table("tables_columns").Where("tableid = ?", tableID).Find(&columns).Error; err != nil {
-		return nil, err
-	}
-
-	if err := db.Table("tables_labels").Where("tableid = ?", tableID).Find(&labels).Error; err != nil {
-		return nil, err
-	}
-
-	if err := db.Table("tables_milestones").Where("tableid = ?", tableID).Find(&milestones).Error; err != nil {
 		return nil, err
 	}
 

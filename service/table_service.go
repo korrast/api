@@ -66,11 +66,33 @@ func (s *TableService) GetTables(userID uuid.UUID) (*[]dto.GetTablesResponse, er
 	return &res, nil
 }
 
-func (s *TableService) GetTable(userID string, tableID string) (*model.Table, error) {
+func (s *TableService) GetTable(userID string, tableID string) (*dto.GetTableResponse, error) {
+  var res dto.GetTableResponse
+
 	table, err := database.SelectTable(s.db, userID, tableID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch table : %w", err)
 	}
 
-	return table, nil
+  columns, err := database.SelectColumnIdsFromTable(s.db, tableID)
+  if err != nil {
+		return nil, fmt.Errorf("failed to fetch column ids : %w", err)
+  }
+
+  labels, err := database.SelectLabelIdsFromTable(s.db, tableID)
+  if err != nil {
+		return nil, fmt.Errorf("failed to fetch column ids : %w", err)
+  }  
+
+  milestones, err := database.SelectMilestoneIdsFromTable(s.db, tableID)
+  if err != nil {
+		return nil, fmt.Errorf("failed to fetch column ids : %w", err)
+  }  
+  res.Id = table.Id.String()
+  res.Title = table.Title
+  res.ColumnIds = columns
+  res.LabelIds = labels
+  res.MilestoneIds = milestones
+
+	return &res, nil
 }
